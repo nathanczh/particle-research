@@ -3,7 +3,7 @@ from sys import exit
 #from ROOT.std import vector
 from numpy import array, uint32, cumsum, roll, zeros, float32, arange
 from struct import unpack
-from event_classes import DrsoscEventStream
+from event_classes import DrsoscEventStream, DrsoscEvent
 
 def read_data(input_filename):
     """
@@ -179,10 +179,10 @@ def read_data(input_filename):
             
             NOTE: the channels 0-3 are for the first board and channels 4-7 are for the second board
             """
-            event = DrsoscEventStream.new_event()
+            event_class = DrsoscEvent()
             for i, x in enumerate(voltage_ints):
-                event[chn_i-1][0][i] = ((x / 65535.) - 0.5)
-                event[chn_i-1][1][i] = t[i]
+                event_class.event[chn_i-1][0][i] = ((x / 65535.) - 0.5)
+                event_class.event[chn_i-1][1][i] = t[i]
             event_stream.events.append(event)
             # print('Channel', chn_i, 'min = ', channels_v[chn_i-1].min())
 

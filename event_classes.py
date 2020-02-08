@@ -10,7 +10,7 @@ class DrsoscEventStream(object):
 
     @staticmethod
     def new_event():
-        return np.zeros((16, 2, 1024), dtype=np.float32) # (channel, (time or waveform), bin)
+        return DrsoscEvent()
 
 
     # @property
@@ -39,10 +39,11 @@ Event Stream:
 """.format(self.board, self.channel_id, self.events, self.timebins)
 
 class DrsoscEvent(object):
-    def __init__(self, event_id, event_time):
-        self.event_id = event_id
-        self.event_time = event_time
+    def __init__(self): # , event_id, event_time):
+        # self.event_id = event_id
+        # self.event_time = event_time
         self.boards = []
+        self.event = np.zeros((16, 2, 1024), dtype=np.float32) # (channel, (time or waveform), bin)
 
 
 class DrsoscBoard(object):
