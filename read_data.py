@@ -183,7 +183,7 @@ def read_data(input_filename):
             for i, x in enumerate(voltage_ints):
                 event_class.event[chn_i-1][0][i] = ((x / 65535.) - 0.5)
                 event_class.event[chn_i-1][1][i] = t[i]
-            event_stream.events.append(event)
+            event_stream.events.append(event_class)
             # print('Channel', chn_i, 'min = ', channels_v[chn_i-1].min())
 
         # End of File
