@@ -6,7 +6,8 @@ class TestReadData(unittest.TestCase):
         self.data = read_data.read_data("../Experimental Data/Trial 21.dat")
 
     def test_read_data_works(self):
-        print(repr(self.data.events[0]))
+        print(repr(self.data.events[0].event))
+        print(repr(self.data.events[1].event))
 
     # def test_data_valid(self):
     #     self.reader.read()
