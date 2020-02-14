@@ -117,6 +117,8 @@ def read_data(input_filename):
             event_serial[0] = unpack("I", f.read(4))[0]
             # print("Event : ", event_serial[0])
             is_new_event = False
+            if event_class != None:
+                event_stream.events.append(event_class)
             event_class = DrsoscEvent()
             # Set the timestamp, where the milliseconds need to be converted to
             # nanoseconds to fit the function arguments
@@ -128,7 +130,7 @@ def read_data(input_filename):
             fluff = f.read(4)
             tcell = unpack('H', f.read(4)[2:])[0]
             # Reset current board number
-            current_board = 0
+            current_board = 0 
             continue
 
         # Read the header, this is either
@@ -189,6 +191,7 @@ def read_data(input_filename):
 
         # End of File
         elif header == b"":
+            event_stream.events.append(event_class)
             #outtree.Fill()
             break
     
