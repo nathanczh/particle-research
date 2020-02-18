@@ -1,5 +1,6 @@
 from struct import unpack
 import numpy as np
+import pandas as pd
 
 
 class DrsoscEventStream(object):
@@ -43,7 +44,15 @@ class DrsoscEvent(object):
         # self.event_id = event_id
         # self.event_time = event_time
         self.boards = []
-        self.event = np.zeros((16, 2, 1024), dtype=np.float32) # (channel, (time or waveform), bin)
+        self.event = None
+        self.channel_index = []
+        self.channel_data = []
+        # np.zeros((16, 2, 1024), dtype=np.float32) # (channel, (time or waveform), bin)
+    def add_channel(self, chn_i, time, wave):
+        self.channel_index.append(chn_i)
+        self.channel_data.append(pd.Series(time, wave))
+    def complete(self):
+        self.event = pd.Series(self.channel_data, self.channel_index)
 
 
 class DrsoscBoard(object):
