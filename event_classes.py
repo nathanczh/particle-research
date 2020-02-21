@@ -1,11 +1,13 @@
 from struct import unpack
 import numpy as np
 import pandas as pd
+from stats import calc_stats_single_channel
 
 
 class DrsoscEventStream(object):
     def __init__(self):
         self.events = []
+        self.stats = {}
     
     @staticmethod
     def new_event():
@@ -14,10 +16,12 @@ class DrsoscEventStream(object):
     def complete(self):
         self.events = pd.Series(self.events)
 
-    def channel(self, chn_i, event_number=None):
-        if event_number:
-            return self.events[event_number][chn_i]
+    def channel(self, chn_i):
         return self.events.map(lambda event: event[chn_i])
+
+    def calc_stats(self):
+        self.stats['single_channel'] = calc_stats_single_channel(self.events)
+        return self.stats
 
 class DrsoscEvent(object):
     def __init__(self): # , event_id, event_time):
@@ -27,20 +31,12 @@ class DrsoscEvent(object):
         self.event = None
         self.channel_index = []
         self.channel_data = []
-        # np.zeros((16, 2, 1024), dtype=np.float32) # (channel, (time or waveform), bin)
+        
     def add_channel(self, chn_i, time, wave):
         self.channel_index.append(chn_i)
         self.channel_data.append(pd.Series(wave, time))
     def complete(self):
         return pd.Series(self.channel_data, self.channel_index)
-    
-    @property
-    def stats(self):
-        return _stats
-
-    @stats.setter
-    def stats(self, stat_obj):
-        self._stats = stat_obj
 
 
 class DrsoscBoard(object):

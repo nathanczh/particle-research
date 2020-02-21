@@ -1,101 +1,129 @@
 #stats file 
 
 import numpy as np
-
-class CallStat(object):
-    def __init__(self, params):
-        self.data = []
-        
-##def moving_avg(channel_time(), channel_waveform(N_BINS)):
-##    
-##    period = 50
-##    
-##    for (i = 0, i < N_BINS - (period + 2), i ++):
-##        
-##        for (n = 1, n < period, n ++):
-##            
-##            channel_waveform(i) += channel_waveform(i + n)
-##
-##        channel_waveform(i) = channel_waveform(i) / period
-##
-##
-##    pass
-##    # doesn't return anything
-
-if i=0 and i<1022, i++:
-    if (waveform[b][2][i] > max_):
-	    
-            max_ = waveform[b][2][i]
-	    timemax = time[b][2][i]
-	    ampindex = i
-	    ampindex2 = i
+import pandas as pd
 
 
-def rise_time(channel_time(), channel_waveform(N_BINS)):
+class Stats:
+    def __init__(series):
+        self.series = series
+
+    @staticmethod
+    def moving_avg(series):
+        return series.rolling(20).mean()
+
+    @property
+    def peak(self):
+        if self._peak:
+            return self._peak
+        self._peak = self.series.max()
+
+    def peak_time(self):
+        return self.series.idxmax()
+
+def process_single_channel_per_event_channel(time_series, processors):
+    for processor in processors:
+        print(Stats.__dict__[processor].__get__(Stats()))
+        time_series = Stats.__dict__[processor].__get__(Stats())(time_series)
     
-    for i = 0, i < N_BINS - 2, i ++:
-            if ((channel_waveform(i) < PEAK_THRESHOLD)
-                and channel_waveform(i+1) >= PEAK_THRESHOLD):
+    return time_series
+    
+
+def calc_stats_single_channel(event_series, processors = ['moving_avg'], stats = ['peak_time']):
+    
+    new_events = event_series.map(
+        lambda event: event.map(
+            lambda time_series:process_single_channel_per_event_channel(time_series, processors)
+        )
+    )
+
+    stat_dict = [ {
+        stat: [] for stat in stats
+    } for channel in event_series[0]]
+    for event in new_events:
+        for channel, channel_event in event.items():
+            for stat in stats:
+                stat_calculator = Stats(channel_event)
+                stat_dict[channel][stat].append(
+                    stat_calculator.__getattribute__(stat)
+                )
+    
+    return stat_dict
+            
+
+
+# class EventStats(object):
+#     def __init__(self, event, processors = [moving_avg]):
+#         for processor in processors:
+#             event = processor(event)
+#         self.event = event
+#         single_channel
+
+#     def rise_time():
+        
+#         for i = 0, i < N_BINS - 2, i ++:
+#                 if ((channel_waveform(i) < PEAK_THRESHOLD)
+#                     and channel_waveform(i+1) >= PEAK_THRESHOLD):
+                    
+#                     return (
+#                         (PEAK_THRESHOLD - channe_waveform(i))
+#                         / (channel_waveform(i + 1) - channel_waveform(i))
+#                         * (channel_time(i+1) -channel_time(i))
+#                         ) + channel_time(i)
                 
-                return (
-                    (PEAK_THRESHOLD - channe_waveform(i))
-                    / (channel_waveform(i + 1) - channel_waveform(i))
-                    * (channel_time(i+1) -channel_time(i))
-                    ) + channel_time(i)
-            
-        return std global numeric_limits
+#             return std global numeric_limits
     
-# assumes curve has been smoothed.
+# # assumes curve has been smoothed.
 
-def peak_time(wave(N_BINS), time(N_BINS)):
+# def peak_time(wave(N_BINS), time(N_BINS)):
     
-    max_dertime = 0
-    max_derivative = 0
+#     max_dertime = 0
+#     max_derivative = 0
     
-    def derivatives(N_BINS):
-        for i in range(0, N_BINS - 1, i ++)
-            derivatives(i) = (wave(i + 1) - wave(i)) / (time(i + 1) - time(i))
+#     def derivatives(N_BINS):
+#         for i in range(0, N_BINS - 1, i ++)
+#             derivatives(i) = (wave(i + 1) - wave(i)) / (time(i + 1) - time(i))
     
-    if ( i >= 9 ):
+#     if ( i >= 9 ):
         
-        def avg_derivative = 0
-        for (j = 0, j < 10, j++):
-            avg_derivative += derivatives(i - j)
-        if (max_derivative < avg_derivative):
-            max_derivative = avg_derivative
-            max_dertime = time(i - 4)
+#         def avg_derivative = 0
+#         for (j = 0, j < 10, j++):
+#             avg_derivative += derivatives(i - j)
+#         if (max_derivative < avg_derivative):
+#             max_derivative = avg_derivative
+#             max_dertime = time(i - 4)
 
-            return max_dertime 
+#             return max_dertime 
 
 
-def amplitude(channel_waveform(N_BINS)):
+# def amplitude(channel_waveform(N_BINS)):
 
-        # find baseline for channel to get amplitude for that channel         sum_ = 0.0
-        for i in range(0, i < 10, i++):
+#         # find baseline for channel to get amplitude for that channel         sum_ = 0.0
+#         for i in range(0, i < 10, i++):
 
-            sum_ += channel_waveform(i)
+#             sum_ += channel_waveform(i)
             
-        baseline = sum_/10
+#         baseline = sum_/10
 
-        # find amplitude for channel
+#         # find amplitude for channel
 
-        max_ = -10000.0
-        for i in range(0, i < N_BINS - 2, i++):
-            if (channel_waveform(i) > max_):
-                max_ = channel_waveform(i)
+#         max_ = -10000.0
+#         for i in range(0, i < N_BINS - 2, i++):
+#             if (channel_waveform(i) > max_):
+#                 max_ = channel_waveform(i)
 
 
-        return max_
+#         return max_
 
-def charge(channel_waveform(N_BINS), channel_time(N_BINS)):
+# def charge(channel_waveform(N_BINS), channel_time(N_BINS)):
 
-    # performs Reimann sum
+#     # performs Reimann sum
 
-    sum_ = 0.0
-    for i in range(0, i < N_BINS - 2, i++):
-        sum_ += (channel_waveform(i) + channel_waveform(i + 1)) * (channel_time(i) + channel_time(i + 1)) / 2
+#     sum_ = 0.0
+#     for i in range(0, i < N_BINS - 2, i++):
+#         sum_ += (channel_waveform(i) + channel_waveform(i + 1)) * (channel_time(i) + channel_time(i + 1)) / 2
 
-    return sum_ / RESISTANCE 
+#     return sum_ / RESISTANCE 
 
 
     
