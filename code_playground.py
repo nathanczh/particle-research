@@ -2,6 +2,8 @@ from read_data import read_data
 from matplotlib.pyplot import plot
 
 
-data = read_data("../Experimental Data/Trial 21.dat")
+data = read_data("../Experimental Data/Trial 01.dat")
 
-event_stream.events[0]
+print(data)
+print(data.events)
+print(data.channel(0))

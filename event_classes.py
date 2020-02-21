@@ -6,38 +6,18 @@ import pandas as pd
 class DrsoscEventStream(object):
     def __init__(self):
         self.events = []
-    # def __array__(self):
-    #     return self.events
-
+    
     @staticmethod
     def new_event():
         return DrsoscEvent()
 
+    def complete(self):
+        self.events = pd.Series(self.events)
 
-    # @property
-    # def trigger_cell(self):
-    #     if(not self.board):
-    #         raise Exception("Board not set")
-    #     if(not self.board.trigger_cell):
-    #         raise Exception("Trigger cell not set")
-    #     return self.board.trigger_cell
-
-    # @property
-    # def timebins(self):
-    #     return self._timebins
-
-    # @timebins.setter
-    # def timebins(self, value):
-    #     return list(roll(timebins[chn_i-1], -tcell))+list(roll(timebins[chn_i-1], -tcell))
-
-    def __repr__(self):
-        return """
-Event Stream:
- - Board: {}
- - Channel: {}
- - Events: {}
- - Timebins: {}
-""".format(self.board, self.channel_id, self.events, self.timebins)
+    def channel(self, chn_i, event_number=None):
+        if event_number:
+            return self.events[event_number][chn_i]
+        return self.events.map(lambda event: event[chn_i])
 
 class DrsoscEvent(object):
     def __init__(self): # , event_id, event_time):
@@ -50,9 +30,17 @@ class DrsoscEvent(object):
         # np.zeros((16, 2, 1024), dtype=np.float32) # (channel, (time or waveform), bin)
     def add_channel(self, chn_i, time, wave):
         self.channel_index.append(chn_i)
-        self.channel_data.append(pd.Series(time, wave))
+        self.channel_data.append(pd.Series(wave, time))
     def complete(self):
-        self.event = pd.Series(self.channel_data, self.channel_index)
+        return pd.Series(self.channel_data, self.channel_index)
+    
+    @property
+    def stats(self):
+        return _stats
+
+    @stats.setter
+    def stats(self, stat_obj):
+        self._stats = stat_obj
 
 
 class DrsoscBoard(object):
@@ -65,7 +53,7 @@ class DrsoscBoard(object):
 
     @trigger_cell.setter
     def trigger_cell(self, value):
-        self._trigger_cell = value;
+        self._trigger_cell = value
 
     def __eq__(self, other):
         return self.board_id == other.board_id
