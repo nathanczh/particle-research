@@ -2,10 +2,10 @@ from read_data import read_data
 import matplotlib.pyplot as plt
 from stats import Stats
 from os import path
-import pickle
+from scipy.signal import find_peaks, peak_widths
 
 data = None
-data = read_data("../Experimental Data/Trial 21.dat")
+data = read_data("../Experimental Data/Trial 25.dat")
 # if not path.exists('data.pkl'):
 #     with open('data.pkl', 'wb') as file:
 #         pickle.dump(data, file, pickle.HIGHEST_PROTOCOL)
@@ -14,7 +14,7 @@ data = read_data("../Experimental Data/Trial 21.dat")
         # data = pickle.load(file)
 
 
-plt.figure()
+# plt.figure()
 
 # print(data)
 # print(data.events)
@@ -30,17 +30,23 @@ def amp_freq(channel):
     )
 
 def time_gaus(chn_1,chn_2):
-    return (data_stats['single_channel'][chn_1]['peak_time'] - data_stats['single_channel'][chn_2]['peak_time']).value_counts(
+    return (data_stats['single_channel'][chn_1]['rise_time'] - data_stats['single_channel'][chn_2]['rise_time']).value_counts(
         normalize= True,
         sort= False,
         bins=250
     )
 
 
-amp_freq(0).plot()
-amp_freq(1).plot()
-plt.show()
+# amp_freq(0).plot()
+# amp_freq(1).plot()
+# plt.show()
 
 plt.figure()
-time_gaus(0,1).plot()
+time_res = time_gaus(0,1)
+peaks, _ = find_peaks(time_res, height=.04)
+widths = peak_widths(time_res, peaks, rel_height=0.5)
+time_res.plot()
+plt.plot(peaks, time_res[peaks], 'x')
+plt.hlines(*widths[1:], color="C2")
+print("Sigma:", widths[0]/2.355) # https://en.wikipedia.org/wiki/Full_width_at_half_maximum
 plt.show()
